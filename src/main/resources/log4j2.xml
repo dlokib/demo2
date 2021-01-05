@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info" name="spring-boot-kafka-log" packages="com.devglan">
     <Appenders>
-        <Kafka name="Kafka" topic="devglan-test">
+        <Kafka name="Kafka" topic="5vnj4iqk-default">
             <PatternLayout pattern="%date %message"/>
-            <Property name="bootstrap.servers">localhost:9092</Property>
+            <Property name="bootstrap.servers">rocket-01.srvs.cloudkafka.com:9094,rocket-02.srvs.cloudkafka.com:9094,rocket-03.srvs.cloudkafka.com:9094</Property>
+            <Property name="enable.auto.commit">true</Property>
+            <Property name="auto.commit.interval.ms">1000</Property>
+            <Property name="auto.offset.reset">earliest</Property>
+            <Property name="session.timeout.ms">30000</Property>
+            <Property name="security.protocol">SASL_SSL</Property>
+            <Property name="sasl.mechanism">SCRAM-SHA-256</Property>
+            <Property name="sasl.jaas.config">org.apache.kafka.common.security.scram.ScramLoginModule required username="5vnj4iqk" password="oix1bkjZIoMac_5UfkOJ2H7TayCi5L-A";</Property>
         </Kafka>
         <Async name="Async">
             <AppenderRef ref="Kafka"/>

@@ -55,7 +55,7 @@ public class BookingResource {
   public ResponseEntity<Long> toBook(@PathVariable Long parkingId,
                                      @PathVariable Long vehicleId,
                                      @PathVariable Long duration) {
-    log.warn("New booking");
+    log.info("New booking");
 
     Optional<Parking> parking = parkingRepository.getParkingById(parkingId);
     Optional<ParkingDTO> parkingDTO = parkingRepository.getParkingStatus(parkingId);
