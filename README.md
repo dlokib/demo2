@@ -3,23 +3,23 @@
 
    ID парковочной зоны, количество свободных мест, всего мест, адрес, координаты
 
-2. GET /api/parking/new/{parkingId}/{vehicleId}/duration
+2. GET /api/booking/new/{parkingId}/{vehicleId}/duration
    —оздает бронь на парковке parkingId дл€ транспортного средства vehicleId длительность duration
    ¬ базе дл€ теста заведены два автомобил€ с идентификаторами 1 и 2
 
    ¬озвращает уникальный идентификатор брони
 
-3. GET /api/parking/extension/{bookingId}/duration
+3. GET /api/booking/extension/{bookingId}/duration
    ѕродливает бронь с идентификатором bookingId на duration минут
 
    ¬озвращает уникальный идентификатор брони, новую и предыдущую длительность парковки
 
-4. GET /api/parking/close/{bookingId}
+4. GET /api/booking/close/{bookingId}
    «акрывает бронь с идентификатором bookingId
 
    ¬озвращает уникальный идентификатор брони, статус завершени€ бронировани€, статус оплаты
 
-5. GET /api/parking/status/{bookingId}
+5. GET /api/booking/status/{bookingId}
    ¬озвращает информацию о бронировании
 
    ID парковочной зоны, ID авто, врем€ начало/окончани€ бронировани€, стоимость, статус оплаты
