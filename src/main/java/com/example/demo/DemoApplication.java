@@ -6,11 +6,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
+import com.ulisesbocchio.jasyptspringboot.annotation.EncryptablePropertySource;
+import com.ulisesbocchio.jasyptspringboot.annotation.EncryptablePropertySources;
+
 import java.util.concurrent.Executor;
 
 
 @EnableAsync
 @SpringBootApplication
+@EncryptablePropertySources({
+    @EncryptablePropertySource("classpath:application.properties")})
+@EnableEncryptableProperties
 public class DemoApplication {
 
   public static void main(String[] args) {
