@@ -1,10 +1,6 @@
 package com.example.demo.web.rest.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
@@ -25,12 +21,18 @@ import com.example.demo.domain.dto.BookCloseDTO;
 import com.example.demo.domain.dto.BookStatusDTO;
 import com.example.demo.domain.dto.BookExtensionDTO;
 
+import com.example.demo.web.dto.BookingNewDTO;
+import com.example.demo.web.dto.BookingCloseDTO;
+import com.example.demo.web.dto.BookingExtensionDTO;
+
 import com.example.demo.repository.ParkingRepository;
 import com.example.demo.repository.BookingRepository;
 import com.example.demo.repository.VehicleRepository;
 
 import java.util.Date;
 import java.util.Optional;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -47,19 +49,17 @@ public class BookingResource {
   @Autowired
   private VehicleRepository vehicleRepository;
 
-  @RequestMapping(value = "new/{parkingId}/{vehicleId}/{duration}",
-                  method = RequestMethod.GET,
+  @RequestMapping(value = "new",
+                  method = RequestMethod.POST,
                   produces = MediaType.APPLICATION_JSON_VALUE)
   @Order(Ordered.HIGHEST_PRECEDENCE)
   @Transactional
-  public ResponseEntity<Long> toBook(@PathVariable Long parkingId,
-                                     @PathVariable Long vehicleId,
-                                     @PathVariable Long duration) {
+  public ResponseEntity<Long> toBook(@Valid @RequestBody BookingNewDTO body) {
     log.info("New booking");
 
-    Optional<Parking> parking = parkingRepository.getParkingById(parkingId);
-    Optional<ParkingDTO> parkingDTO = parkingRepository.getParkingStatus(parkingId);
-    Optional<Vehicle> vehicle = vehicleRepository.getVehicleById(vehicleId);
+    Optional<Parking> parking = parkingRepository.getParkingById(body.getParkingId());
+    Optional<ParkingDTO> parkingDTO = parkingRepository.getParkingStatus(body.getParkingId());
+    Optional<Vehicle> vehicle = vehicleRepository.getVehicleById(body.getVehicleId());
 
     if(!parking.isPresent()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -80,7 +80,7 @@ public class BookingResource {
     booking.setParking(parking.get());
     booking.setVehicle(vehicle.get());
     booking.setTs_from(currentDate);
-    booking.setTs_till(new Date(currentDate.getTime() + (duration * 60000)));
+    booking.setTs_till(new Date(currentDate.getTime() + (body.getDuration() * 60000)));
     booking.setPayment(false);
 
     bookingRepository.save(booking);
@@ -88,29 +88,28 @@ public class BookingResource {
     return new ResponseEntity<>(booking.getId(), HttpStatus.OK);
   }
 
-  @RequestMapping(value = "extension/{bookingId}/{duration}",
-                  method = RequestMethod.GET,
+  @RequestMapping(value = "extension",
+                  method = RequestMethod.PUT,
                   produces = MediaType.APPLICATION_JSON_VALUE)
   @Order(Ordered.HIGHEST_PRECEDENCE)
   @Transactional
-  public ResponseEntity<BookExtensionDTO> toBookExtension(@PathVariable Long bookingId,
-                                                          @PathVariable Long duration) {
-    Optional<Booking> booking = bookingRepository.getBookingById(bookingId);
+  public ResponseEntity<BookExtensionDTO> toBookExtension(@Valid @RequestBody BookingExtensionDTO body) {
+    Optional<Booking> booking = bookingRepository.getBookingById(body.getBookingId());
 
     if(!booking.isPresent()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    return new ResponseEntity<>(bookingExtension(booking.get(), duration), HttpStatus.OK);
+    return new ResponseEntity<>(bookingExtension(booking.get(), body.getDuration()), HttpStatus.OK);
   }
 
-  @RequestMapping(value = "close/{bookingId}",
-                  method = RequestMethod.GET,
+  @RequestMapping(value = "close",
+                  method = RequestMethod.PUT,
                   produces = MediaType.APPLICATION_JSON_VALUE)
   @Order(Ordered.HIGHEST_PRECEDENCE)
   @Transactional
-  public ResponseEntity<BookCloseDTO> toBookClose(@PathVariable Long bookingId) {
-    Optional<Booking> booking = bookingRepository.getBookingById(bookingId);
+  public ResponseEntity<BookCloseDTO> toBookClose(@Valid @RequestBody BookingCloseDTO body) {
+    Optional<Booking> booking = bookingRepository.getBookingById(body.getBookingId());
 
     if(!booking.isPresent()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
